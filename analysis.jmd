@@ -1,0 +1,26 @@
+## Kaggle Titanic Analysis in Julia
+
+Practicing using julia for ML analysis - taking inspiration from [Ajinkya Kale](http://ajkl.github.io/2015/08/10/Titanic-with-Julia/)
+
+Test and training data [downloaded from kaggle](#) and put into `data/` folder. Let's read it into julia:
+
+```julia
+using DataFrames
+
+train = readtable("data/train.csv")
+tst = readtable("data/test.csv")
+
+describe(train)
+```
+
+In the training set, people that survived get a `1` in the `:Survived` column, so we can see from the data summary that ~38.4% of passengers survived (the mean of that column). Or we can look at it directly:
+
+```julia
+proportionmap(train[:Survived])
+```
+
+... or to get total numbers
+
+```julia
+countmap(train[:Survived])
+```
