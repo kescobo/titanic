@@ -2,7 +2,7 @@
 
 Practicing using julia for ML analysis - taking inspiration from [Ajinkya Kale](http://ajkl.github.io/2015/08/10/Titanic-with-Julia/)
 
-Test and training data [downloaded from kaggle](#) and put into `data/` folder. Let's read it into julia:
+Test and training data [downloaded from kaggle](https://www.kaggle.com/c/titanic/data) and put into `data/` folder. Let's read it into julia:
 
 ```julia
 using DataFrames
@@ -24,3 +24,47 @@ proportionmap(train[:Survived])
 ```julia
 countmap(train[:Survived])
 ```
+
+All the tutorials I've seen start with looking gender as the first explanatory variable to predict who survives, but I'm going to show my strong liberal bias and look first at socioeconomic status. There are a couple of ways we could do this - there is a column for passenger class (1st, 2nd or 3rd - `train[:pclass]`), and it says right there in the [data description](https://www.kaggle.com/c/titanic/data) that
+
+>Pclass is a proxy for socio-economic status (SES)
+ 1st ~ Upper; 2nd ~ Middle; 3rd ~ Lower."
+
+But just for fun (and maybe a little be to be contrarian), I'm going to instead look at the cost of the fare, which is a continuous rather than a categorical variable. My prediction is that people that paid more for their fare are more likely to survive. looking back at the output from `describe()`, we can see that the mean fare for all passengers in the training set is ~$32. Let's look what happens if we look at only the survivors.
+
+```julia
+using Plots
+plotlyjs()
+
+survived = train[train[:Survived] .== 1, :]
+died = train[train[:Survived] .== 0, :]
+
+describe(survived[:Fare])
+describe(died[:Fare])
+```
+
+That's quite a stark difference! We could also separate the fares based on quartiles (again, look back at the initial call to `describe()`) and plot it.
+
+```julia
+train[:fare_qtl] = 1 # makes a new column, all = 1
+train[7.9 .< train[:Fare] .<= 14.45, :fare_qtl] = 2
+train[14.45 .< train[:Fare] .<= 32.2, :fare_qtl] = 3
+train[32.2 .< train[:Fare], :fare_qtl] = 4
+
+fqtl = by(train, :fare_qtl, df -> mean(df[:Survived])) # makes a new 4x2 dataframe
+
+bar(fqtl[:fare_qtl], fqtl[:x1], xlabel="Fare Quartile", ylabel="Fraction Survived", legend=false)
+```
+
+Well. Shocker.
+
+OK, let's go ahead and bring gender into this.
+
+```julia
+fqtl = by(train, [:fare_qtl, :Sex], df -> mean(df[:Survived]))
+xs = [[1,2,3,4], [1,2,3,4]]
+ys = [fqtl[fqtl[:Sex] .== "female", :x1], fqtl[fqtl[:Sex] .== "male", :x1]]
+bar(xs, ys, color=[:purple :orange], xlabel="Fare Quartile", ylabel="Fraction Survived", label=["female" "male"])
+```
+
+So that's interesting, except for the highest fares, the difference in survival between the different groups seems to be driven entirely by the men. And poor men sure were screwed...
