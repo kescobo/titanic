@@ -30,7 +30,7 @@ All the tutorials I've seen start with looking gender as the first explanatory v
 >Pclass is a proxy for socio-economic status (SES)
  1st ~ Upper; 2nd ~ Middle; 3rd ~ Lower."
 
-But just for fun (and maybe a little be to be contrarian), I'm going to instead look at the cost of the fare, which is a continuous rather than a categorical variable. My prediction is that people that paid more for their fare are more likely to survive. looking back at the output from `describe()`, we can see that the mean fare for all passengers in the training set is ~$32. Let's look what happens if we look at only the survivors.
+But just for fun (and maybe a little be to be contrarian), I'm going to instead look at the cost of the fare, which is a continuous rather than a categorical variable. My prediction is that people that paid more for their fare are more likely to survive. looking back at the output from `describe()`, we can see that the mean fare for all passengers in the training set is about \$32. Let's look what happens if we look at only the survivors.
 
 ```julia
 using Plots
