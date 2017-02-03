@@ -34,7 +34,7 @@ But just for fun (and maybe a little be to be contrarian), I'm going to instead 
 
 ```julia
 using Plots
-plotlyjs()
+pyplot()
 
 survived = train[train[:Survived] .== 1, :]
 died = train[train[:Survived] .== 0, :]
@@ -121,10 +121,8 @@ The competition on kaggle asks for a csv containing passenger IDs and a predicti
 ```julia
 model = build_tree(labels, features) # rebuild the model
 model = prune_tree(model, 0.6) # using 0.6 based on nfoldCV_tree
-
-testfeatures = Array(tst[:, [:Age, :Fare, :Sex, :SibSp, :Pclass, :Parch]])
 ```
-Crap - this is maybe why we have to artifically change the NA's to the median or most frequent values for a column. Let's check which columns have NAs.
+When I tried to run `testfeatures = Array(tst[:, [:Age, :Fare, :Sex, :SibSp, :Pclass, :Parch]])`, I got an error. Hmm... this is maybe why we have to artifically change the NA's to the median or most frequent values for a column. Let's check which columns have NAs.
 
 ```julia
 for name in names(tst)
